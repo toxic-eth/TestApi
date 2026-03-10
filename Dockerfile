@@ -13,6 +13,9 @@ COPY --from=composer /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
+COPY . /var/www/html
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader
+
 COPY docker/start.sh /usr/local/bin/start-app
 RUN chmod +x /usr/local/bin/start-app
 

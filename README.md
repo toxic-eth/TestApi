@@ -18,6 +18,7 @@ Laravel API project for the backend technical task.
 - `X-Owner` required header validation
 - Rate limit: `60 requests / minute`
 - Request logging to MySQL table `health_check_requests`
+- Automated feature tests for core behavior
 
 ## Run
 
@@ -26,6 +27,8 @@ git clone https://github.com/toxic-eth/TestApi
 cd TestApi
 docker compose up -d
 ```
+
+The application image is built with PHP dependencies during `docker compose up -d`, so the runtime container does not need to run `composer install` on each start.
 
 API base URL:
 
@@ -106,6 +109,14 @@ Check that requests are saved in MySQL:
 docker compose exec -T mysql mysql -utest_api -ptest_api test_api -e "SELECT id, owner_uuid, db_ok, cache_ok, response_code, created_at FROM health_check_requests ORDER BY id DESC LIMIT 10;"
 ```
 
+## Automated Tests
+
+Run the feature tests inside the application container:
+
+```powershell
+docker compose exec -T app php artisan test
+```
+
 ## Storage
 
 Table: `health_check_requests`
@@ -126,3 +137,11 @@ Fields:
 - Requests are validated in middleware before controller execution
 - Rate limiting is configured separately for the health-check endpoint
 - If MySQL is unavailable, request logging cannot be completed, but the endpoint still returns the correct health-check status
+
+## Design Decisions
+
+- The health-check logic is isolated in a dedicated service, keeping the controller thin
+- Request persistence is isolated in its own logger service to keep responsibilities separated
+- `X-Owner` validation is implemented as route middleware because it is an HTTP contract concern
+- The endpoint returns only the JSON shape required by the task, while internal code uses a typed result object for clarity and testability
+- Docker is configured for reviewer convenience: clone the repository and run `docker compose up -d`

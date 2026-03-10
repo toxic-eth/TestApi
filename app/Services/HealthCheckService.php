@@ -2,21 +2,19 @@
 
 namespace App\Services;
 
+use App\Data\HealthCheckResult;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 use Throwable;
 
 class HealthCheckService
 {
-    /**
-     * @return array{db: bool, cache: bool}
-     */
-    public function check(): array
+    public function check(): HealthCheckResult
     {
-        return [
-            'db' => $this->checkDatabase(),
-            'cache' => $this->checkCache(),
-        ];
+        return new HealthCheckResult(
+            db: $this->checkDatabase(),
+            cache: $this->checkCache(),
+        );
     }
 
     private function checkDatabase(): bool
