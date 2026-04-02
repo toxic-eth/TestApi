@@ -1,35 +1,46 @@
 # FastAPI Microservice Test Task
 
-Микросервис реализован строго по ТЗ:
+Микросервис реализован по ТЗ:
 
 - FastAPI
 - один endpoint `POST /api/v1/messages`
 - трехуровневая архитектура: `routes -> services -> repositories/database`
 - сохранение всех запросов и ответов в PostgreSQL
-- работа с базой только через ORM (SQLAlchemy)
+- работа с базой только через ORM (`SQLAlchemy`)
 - запуск приложения и базы одной командой через Docker Compose
 
-## Структура проекта
+## Project Structure
 
 ```text
-test-task-fastapi/
-  app/
-    api/routes/messages.py
-    core/config.py
-    db/base.py
-    db/session.py
-    models/message_log.py
-    repositories/message_repository.py
-    schemas/message.py
-    services/message_service.py
-    main.py
-  Dockerfile
-  docker-compose.yml
-  requirements.txt
-  .env.example
+app/
+  api/routes/messages.py
+  core/config.py
+  db/base.py
+  db/session.py
+  models/message_log.py
+  repositories/message_repository.py
+  schemas/message.py
+  services/message_service.py
+  main.py
+Dockerfile
+docker-compose.yml
+requirements.txt
+.env.example
 ```
 
-## Формат запроса
+## Run
+
+```bash
+docker compose up --build
+```
+
+После запуска сервис будет доступен по адресу:
+
+```text
+http://localhost:8000/api/v1/messages
+```
+
+## Request Example
 
 ```json
 {
@@ -42,7 +53,7 @@ test-task-fastapi/
 }
 ```
 
-## Формат ответа
+## Response Example
 
 ```json
 {
@@ -53,31 +64,11 @@ test-task-fastapi/
     "source": "test-task",
     "priority": "high"
   },
-  "created_at": "2026-04-02T12:00:00.000000"
+  "created_at": "2026-04-02T12:00:00.000000Z"
 }
 ```
 
-## Как запустить
-
-1. Перейти в каталог сервиса:
-
-   ```bash
-   cd test-task-fastapi
-   ```
-
-2. Поднять приложение и PostgreSQL одной командой:
-
-   ```bash
-   docker compose up --build
-   ```
-
-3. После запуска сервис будет доступен по адресу:
-
-   ```text
-   http://localhost:8000/api/v1/messages
-   ```
-
-## Пример запроса
+## cURL Example
 
 ```bash
 curl -X POST http://localhost:8000/api/v1/messages \
@@ -92,33 +83,13 @@ curl -X POST http://localhost:8000/api/v1/messages \
   }'
 ```
 
-## Что сохраняется в базе
+## Database
 
-В таблицу `message_logs` записываются:
+В таблицу `message_logs` сохраняются:
 
-- входящий `id`
-- исходный `text`
-- входящий `context`
-- полный JSON запроса
-- полный JSON ответа
-- время создания записи
-
-## Переменные окружения
-
-Файл `.env.example` приложен как пример, но для стандартного запуска он не обязателен: `docker-compose.yml` уже содержит безопасные значения по умолчанию.
-
-## Ссылка на репозиторий
-
-Сейчас проект подготовлен как отдельный локальный git-репозиторий по пути:
-
-```text
-W:\fastapi-test-task
-```
-
-Чтобы опубликовать его на GitHub, достаточно выполнить:
-
-```bash
-cd W:\fastapi-test-task
-git remote add origin <YOUR_GITHUB_REPO_URL>
-git push -u origin main
-```
+- `request_id`
+- `request_text`
+- `request_context`
+- `request_payload`
+- `response_payload`
+- `created_at`
